@@ -4,20 +4,21 @@ import {
   FlatList,
   ImageBackground,
   KeyboardAvoidingView,
-  Text,
+  ListRenderItem,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {PADDING} from '../../constants/constants';
-import {useAppNavigation} from '../types';
 import {useAppDispatch, useAppSelector} from '../../store/store';
 import {
-  getAllPokemonTC,
-  getCurrentPokemonTC,
-  refreshAllPokemonTC,
+  getAllPokemon,
+  getCurrentPokemon,
+  refreshAllPokemon,
 } from '../../store/root';
 import {styles} from './styles';
+import {PokemonCard} from '../../components/PokemonCard';
+import {PokemonItemType} from '../../api/api';
+import {useAppNavigation} from '../../hooks/hooks';
 
 const image = {uri: 'https://slovnet.ru/wp-content/uploads/2018/08/23-36.jpg'};
 
@@ -31,15 +32,22 @@ export const Pokemons = () => {
   const [input, setInput] = useState('');
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    dispatch(refreshAllPokemonTC())
+    dispatch(refreshAllPokemon())
       .unwrap()
       .then(() => {
         setRefreshing(false);
         setInput('');
       });
   }, [dispatch]);
+  const onPokemonCard = (url: string) => {
+    dispatch(getCurrentPokemon(url))
+      .unwrap()
+      .then(() => {
+        navigation.navigate('CurrentPokemon');
+      });
+  };
   useEffect(() => {
-    dispatch(getAllPokemonTC(offset));
+    dispatch(getAllPokemon(offset));
   }, [dispatch, offset]);
   const onEndReached = () => {
     setOffset(offset + 10);
@@ -51,6 +59,20 @@ export const Pokemons = () => {
       </View>
     );
   }
+  // @ts-ignore
+  const renderItem: ListRenderItem<PokemonItemType> = ({item}) => {
+    if (input === '') {
+      return (
+        <PokemonCard onPress={onPokemonCard} url={item.url} name={item.name} />
+      );
+    }
+    if (item.name.toLowerCase().includes(input.toLowerCase())) {
+      return (
+        <PokemonCard onPress={onPokemonCard} url={item.url} name={item.name} />
+      );
+    }
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
@@ -70,39 +92,7 @@ export const Pokemons = () => {
           onEndReached={onEndReached}
           refreshing={refreshing}
           onRefresh={onRefresh}
-          // @ts-ignore
-          renderItem={({item}) => {
-            if (input === '') {
-              return (
-                <TouchableOpacity
-                  onPress={() => {
-                    dispatch(getCurrentPokemonTC(item.url))
-                      .unwrap()
-                      .then(() => {
-                        navigation.navigate('CurrentPokemon');
-                      });
-                  }}
-                  style={styles.box}>
-                  <Text style={styles.text}>{item.name}</Text>
-                </TouchableOpacity>
-              );
-            }
-            if (item.name.toLowerCase().includes(input.toLowerCase())) {
-              return (
-                <TouchableOpacity
-                  onPress={() => {
-                    dispatch(getCurrentPokemonTC(item.url))
-                      .unwrap()
-                      .then(() => {
-                        navigation.navigate('CurrentPokemon');
-                      });
-                  }}
-                  style={styles.box}>
-                  <Text style={styles.text}>{item.name}</Text>
-                </TouchableOpacity>
-              );
-            }
-          }}
+          renderItem={renderItem}
         />
         {isFetching && (
           <ActivityIndicator size="large" style={styles.loadingCard} />

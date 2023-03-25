@@ -1,10 +1,10 @@
 import React from 'react';
 import {Pokemons} from '../screens/Pokemons/Pokemons';
-import {RootStackParamsList} from '../screens/types';
 import {CurrentPokemon} from '../screens/CurrentPokemon/currentPokemon';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-
 import Ionicons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {RootStackParamsList} from '../hooks/hooks';
+
 const Tab = createBottomTabNavigator<RootStackParamsList>();
 export const Main = () => {
   return (

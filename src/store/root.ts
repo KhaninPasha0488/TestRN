@@ -4,44 +4,57 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import {api, PokemonItem, PokemonT} from '../api/api';
+import {AxiosError} from 'axios';
+import {api, PokemonItemType, PokemonType} from '../api/api';
 
-export const getAllPokemonTC = createAsyncThunk<
-  PokemonItem[] | undefined,
+export const getAllPokemon = createAsyncThunk<
+  PokemonItemType[] | undefined,
   number
->('root/getAllPokemon', async (offset: number, {dispatch}) => {
+>('root/getAllPokemon', async (offset: number, {dispatch, rejectWithValue}) => {
   dispatch(setIsFetching(true));
   try {
     const res = await api.getAllPokemon(offset);
     dispatch(setIsFetching(false));
     return res.data.results;
-  } catch (e) {}
+  } catch (e) {
+    const err = e as Error | AxiosError;
+    return rejectWithValue(err.message);
+  }
 });
-export const refreshAllPokemonTC = createAsyncThunk<
-  PokemonItem[] | undefined,
+
+export const refreshAllPokemon = createAsyncThunk<
+  PokemonItemType[] | undefined,
   void
->('root/refreshAllPokemon', async () => {
+>('root/refreshAllPokemon', async (_, {rejectWithValue}) => {
   try {
     const res = await api.refreshAllPokemon();
     return res.data.results;
-  } catch (e) {}
+  } catch (e) {
+    const err = e as Error | AxiosError;
+    return rejectWithValue(err.message);
+  }
 });
-export const getCurrentPokemonTC = createAsyncThunk<
-  PokemonT | undefined,
+
+export const getCurrentPokemon = createAsyncThunk<
+  PokemonType | undefined,
   string
->('root/getCurrentPokemon', async params => {
+>('root/getCurrentPokemon', async (params, {rejectWithValue}) => {
   try {
     const res = await api.getCurrentPokemon(params);
     return res.data;
-  } catch (e) {}
+  } catch (e) {
+    const err = e as Error | AxiosError;
+    return rejectWithValue(err.message);
+  }
 });
+
 export const clearCurrentPokemonAC = createAction('root/clearCurrentPokemonAC');
 const rootSlice = createSlice({
   name: 'root',
   initialState: {
     isFetching: false as boolean,
-    allPokemon: [] as PokemonItem[],
-    currentPokemon: {} as PokemonT,
+    allPokemon: [] as PokemonItemType[],
+    currentPokemon: {} as PokemonType,
   },
   reducers: {
     setIsFetching(state, action: PayloadAction<boolean>) {
@@ -50,23 +63,23 @@ const rootSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(getAllPokemonTC.fulfilled, (state, action) => {
+      .addCase(getAllPokemon.fulfilled, (state, action) => {
         state.allPokemon = action.payload
           ? [...state.allPokemon, ...action.payload]
-          : ([] as PokemonItem[]);
+          : ([] as PokemonItemType[]);
       })
-      .addCase(refreshAllPokemonTC.fulfilled, (state, action) => {
+      .addCase(refreshAllPokemon.fulfilled, (state, action) => {
         state.allPokemon = action.payload
           ? action.payload
-          : ([] as PokemonItem[]);
+          : ([] as PokemonItemType[]);
       })
-      .addCase(getCurrentPokemonTC.fulfilled, (state, action) => {
+      .addCase(getCurrentPokemon.fulfilled, (state, action) => {
         state.currentPokemon = action.payload
           ? action.payload
-          : ({} as PokemonT);
+          : ({} as PokemonType);
       })
       .addCase(clearCurrentPokemonAC, state => {
-        state.currentPokemon = {} as PokemonT;
+        state.currentPokemon = {} as PokemonType;
       });
   },
 });

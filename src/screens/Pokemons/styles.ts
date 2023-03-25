@@ -1,23 +1,6 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
-  box: {
-    alignItems: 'center',
-    backgroundColor: '#88c1cb',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    marginVertical: 5,
-    marginLeft: '10%',
-    width: '80%',
-    borderRadius: 5,
-    borderWidth: 1,
-    opacity: 0.8,
-  },
-  text: {
-    fontSize: 40,
-    color: '#100f0f',
-    fontFamily: 'DeliciousHandrawn-Regular',
-  },
   container: {
     flex: 1,
   },
@@ -30,8 +13,9 @@ export const styles = StyleSheet.create({
     opacity: 0.9,
     paddingHorizontal: 30,
     marginHorizontal: 30,
-    marginVertical: 10,
     borderRadius: 5,
+    marginTop: Platform.OS === 'ios' ? 30 : 10,
+    marginBottom: 10,
   },
   input: {
     fontSize: 20,

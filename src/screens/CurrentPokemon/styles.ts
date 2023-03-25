@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: '500',
     marginBottom: 40,
-    fontFamily: 'ShadowsIntoLight-Regular',
+    fontFamily: 'DeliciousHandrawn-Regular',
   },
   imege: {
     width: 200,
