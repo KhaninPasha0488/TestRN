@@ -59,7 +59,6 @@ export const Pokemons = () => {
       </View>
     );
   }
-  // @ts-ignore
   const renderItem: ListRenderItem<PokemonItemType> = ({item}) => {
     if (input === '') {
       return (

@@ -11,14 +11,13 @@ export const Main = () => {
     <Tab.Navigator
       screenOptions={({route}) => ({
         tabBarIcon: ({color, size}) => {
-          let iconName: string;
+          let iconName: string = '';
 
           if (route.name === 'Pokemons') {
             iconName = 'pokeball';
           } else if (route.name === 'CurrentPokemon') {
             iconName = 'pokemon-go';
           }
-          // @ts-ignore
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: 'tomato',
