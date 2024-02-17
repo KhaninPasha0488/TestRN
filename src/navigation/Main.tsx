@@ -1,6 +1,6 @@
 import React from 'react';
-import {Pokemons} from '../screens/Pokemons/Pokemons';
-import {CurrentPokemon} from '../screens/CurrentPokemon/currentPokemon';
+import {Tasks} from '../screens/Tasks/Tasks';
+import {CurrentTask} from '../screens/CurrentTask/currentTask';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {RootStackParamsList} from '../hooks/hooks';
@@ -13,10 +13,10 @@ export const Main = () => {
         tabBarIcon: ({color, size}) => {
           let iconName: string = '';
 
-          if (route.name === 'Pokemons') {
-            iconName = 'pokeball';
-          } else if (route.name === 'CurrentPokemon') {
-            iconName = 'pokemon-go';
+          if (route.name === 'Tasks') {
+            iconName = 'clipboard-check-multiple-outline';
+          } else if (route.name === 'CurrentTask') {
+            iconName = 'clipboard-check-outline';
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -24,13 +24,13 @@ export const Main = () => {
         tabBarInactiveTintColor: 'gray',
       })}>
       <Tab.Screen
-        name="Pokemons"
-        component={Pokemons}
+        name="Tasks"
+        component={Tasks}
         options={{headerShown: false}}
       />
       <Tab.Screen
-        name="CurrentPokemon"
-        component={CurrentPokemon}
+        name="CurrentTask"
+        component={CurrentTask}
         options={{headerShown: false}}
       />
     </Tab.Navigator>

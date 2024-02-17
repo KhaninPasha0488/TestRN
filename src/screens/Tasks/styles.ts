@@ -1,4 +1,4 @@
-import {Platform, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 30,
     marginHorizontal: 30,
     borderRadius: 5,
-    marginTop: Platform.OS === 'ios' ? 30 : 10,
+    marginTop: 10,
     marginBottom: 10,
   },
   input: {
@@ -31,5 +31,17 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 5,
     left: '45%',
+  },
+  activeBorder: {
+    borderBottomWidth: 4,
+    borderBottomColor: 'rgba(89,79,46,0.9)',
+  },
+  text: {
+    fontSize: 25,
+    color: 'rgba(89,79,46,0.6)',
+  },
+  activeText: {
+    fontSize: 25,
+    color: 'rgba(89,79,46,0.9)',
   },
 });

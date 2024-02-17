@@ -6,9 +6,12 @@ const instance = axios.create({
   baseURL: BASE_URL,
 });
 
-export type PokemonItemType = {
-  name: string;
-  url: string;
+export type TaskItemType = {
+  id: number;
+  title: string;
+  description: string;
+  is_done: boolean;
+  is_important: boolean;
 };
 export type PokemonType = {
   id: number;
@@ -23,14 +26,14 @@ export type PokemonType = {
 };
 
 export const api = {
-  getAllPokemon(offset: number) {
-    return instance.get<{results: PokemonItemType[]}>(
+  getAllTasks(offset: number) {
+    return instance.get<{results: TaskItemType[]}>(
       `/pokemon?limit=10&offset=${offset}`,
     );
   },
 
-  refreshAllPokemon() {
-    return instance.get<{results: PokemonItemType[]}>(
+  refreshAllTasks() {
+    return instance.get<{results: TaskItemType[]}>(
       '/pokemon?limit=10&offset=0',
     );
   },

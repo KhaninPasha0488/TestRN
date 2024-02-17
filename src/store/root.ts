@@ -5,15 +5,15 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import {AxiosError} from 'axios';
-import {api, PokemonItemType, PokemonType} from '../api/api';
+import {api, TaskItemType, PokemonType} from '../api/api';
 
-export const getAllPokemon = createAsyncThunk<
-  PokemonItemType[] | undefined,
+export const getAllTasks = createAsyncThunk<
+  TaskItemType[] | undefined,
   number
->('root/getAllPokemon', async (offset: number, {dispatch, rejectWithValue}) => {
+>('root/getAllTasks', async (offset: number, {dispatch, rejectWithValue}) => {
   dispatch(setIsFetching(true));
   try {
-    const res = await api.getAllPokemon(offset);
+    const res = await api.getAllTasks(offset);
     dispatch(setIsFetching(false));
     return res.data.results;
   } catch (e) {
@@ -22,12 +22,12 @@ export const getAllPokemon = createAsyncThunk<
   }
 });
 
-export const refreshAllPokemon = createAsyncThunk<
-  PokemonItemType[] | undefined,
+export const refreshAllTasks = createAsyncThunk<
+  TaskItemType[] | undefined,
   void
->('root/refreshAllPokemon', async (_, {rejectWithValue}) => {
+>('root/refreshAllTasks', async (_, {rejectWithValue}) => {
   try {
-    const res = await api.refreshAllPokemon();
+    const res = await api.refreshAllTasks();
     return res.data.results;
   } catch (e) {
     const err = e as Error | AxiosError;
@@ -53,7 +53,7 @@ const rootSlice = createSlice({
   name: 'root',
   initialState: {
     isFetching: false as boolean,
-    allPokemon: [] as PokemonItemType[],
+    allTasks: [] as TaskItemType[],
     currentPokemon: {} as PokemonType,
   },
   reducers: {
@@ -63,15 +63,15 @@ const rootSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(getAllPokemon.fulfilled, (state, action) => {
-        state.allPokemon = action.payload
-          ? [...state.allPokemon, ...action.payload]
-          : ([] as PokemonItemType[]);
+      .addCase(getAllTasks.fulfilled, (state, action) => {
+        state.allTasks = action.payload
+          ? [...state.allTasks, ...action.payload]
+          : ([] as TaskItemType[]);
       })
-      .addCase(refreshAllPokemon.fulfilled, (state, action) => {
-        state.allPokemon = action.payload
+      .addCase(refreshAllTasks.fulfilled, (state, action) => {
+        state.allTasks = action.payload
           ? action.payload
-          : ([] as PokemonItemType[]);
+          : ([] as TaskItemType[]);
       })
       .addCase(getCurrentPokemon.fulfilled, (state, action) => {
         state.currentPokemon = action.payload

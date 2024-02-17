@@ -1,8 +1,9 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {TaskItemType} from '../api/api';
 
 export type RootStackParamsList = {
-  Pokemons: undefined;
-  CurrentPokemon: undefined;
+  Tasks: undefined;
+  CurrentTask: {item: TaskItemType};
 };
 
 export type UseNavigationType = NavigationProp<RootStackParamsList>;
