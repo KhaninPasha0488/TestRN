@@ -1,26 +1,21 @@
-import {
-  createAction,
-  createAsyncThunk,
-  createSlice,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AxiosError} from 'axios';
-import {api, TaskItemType, PokemonType} from '../api/api';
+import {api, TaskItemType, TaskItemUpType} from '../api/api';
 
-export const getAllTasks = createAsyncThunk<
-  TaskItemType[] | undefined,
-  number
->('root/getAllTasks', async (offset: number, {dispatch, rejectWithValue}) => {
-  dispatch(setIsFetching(true));
-  try {
-    const res = await api.getAllTasks(offset);
-    dispatch(setIsFetching(false));
-    return res.data.results;
-  } catch (e) {
-    const err = e as Error | AxiosError;
-    return rejectWithValue(err.message);
-  }
-});
+export const getAllTasks = createAsyncThunk<TaskItemType[] | undefined, void>(
+  'root/getAllTasks',
+  async (todo, {dispatch, rejectWithValue}) => {
+    dispatch(setIsFetching(true));
+    try {
+      const res = await api.getAllTasks();
+      dispatch(setIsFetching(false));
+      return res.data.todo;
+    } catch (e) {
+      const err = e as Error | AxiosError;
+      return rejectWithValue(err.message);
+    }
+  },
+);
 
 export const refreshAllTasks = createAsyncThunk<
   TaskItemType[] | undefined,
@@ -28,33 +23,69 @@ export const refreshAllTasks = createAsyncThunk<
 >('root/refreshAllTasks', async (_, {rejectWithValue}) => {
   try {
     const res = await api.refreshAllTasks();
-    return res.data.results;
+    return res.data.todo;
   } catch (e) {
     const err = e as Error | AxiosError;
     return rejectWithValue(err.message);
   }
 });
 
-export const getCurrentPokemon = createAsyncThunk<
-  PokemonType | undefined,
-  string
->('root/getCurrentPokemon', async (params, {rejectWithValue}) => {
+export const creatCurrentTask = createAsyncThunk<
+  TaskItemType[] | undefined,
+  TaskItemType
+>('root/creatCurrentTask', async (item, {rejectWithValue}) => {
   try {
-    const res = await api.getCurrentPokemon(params);
-    return res.data;
+    const res = await api.creatCurrentTask(item);
+    return res.data.todo;
   } catch (e) {
     const err = e as Error | AxiosError;
     return rejectWithValue(err.message);
   }
 });
 
-export const clearCurrentPokemonAC = createAction('root/clearCurrentPokemonAC');
+export const editCurrentTask = createAsyncThunk<
+  TaskItemType[] | undefined,
+  TaskItemType
+>('root/editCurrentTask', async (item, {rejectWithValue}) => {
+  try {
+    const res = await api.aditCurrentTask(item);
+    return res.data.todo;
+  } catch (e) {
+    const err = e as Error | AxiosError;
+    return rejectWithValue(err.message);
+  }
+});
+export const updateCurrentTask = createAsyncThunk<
+  TaskItemType[] | undefined,
+  TaskItemUpType
+>('root/updateCurrentTask', async (itemUp, {rejectWithValue}) => {
+  try {
+    const res = await api.updateCurrentTask(itemUp);
+    return res.data.todo;
+  } catch (e) {
+    const err = e as Error | AxiosError;
+    return rejectWithValue(err.message);
+  }
+});
+export const deleteCurrentTask = createAsyncThunk<
+  TaskItemType[] | undefined,
+  TaskItemType
+>('root/deleteCurrentTask', async (item, {rejectWithValue}) => {
+  try {
+    const res = await api.deleteCurrentTask(item);
+    return res.data.todo;
+  } catch (e) {
+    const err = e as Error | AxiosError;
+    return rejectWithValue(err.message);
+  }
+});
+
 const rootSlice = createSlice({
   name: 'root',
   initialState: {
     isFetching: false as boolean,
     allTasks: [] as TaskItemType[],
-    currentPokemon: {} as PokemonType,
+    currentTask: {} as TaskItemType,
   },
   reducers: {
     setIsFetching(state, action: PayloadAction<boolean>) {
@@ -65,7 +96,7 @@ const rootSlice = createSlice({
     builder
       .addCase(getAllTasks.fulfilled, (state, action) => {
         state.allTasks = action.payload
-          ? [...state.allTasks, ...action.payload]
+          ? [...action.payload]
           : ([] as TaskItemType[]);
       })
       .addCase(refreshAllTasks.fulfilled, (state, action) => {
@@ -73,13 +104,25 @@ const rootSlice = createSlice({
           ? action.payload
           : ([] as TaskItemType[]);
       })
-      .addCase(getCurrentPokemon.fulfilled, (state, action) => {
-        state.currentPokemon = action.payload
-          ? action.payload
-          : ({} as PokemonType);
+      .addCase(creatCurrentTask.fulfilled, (state, action) => {
+        state.allTasks = action.payload
+          ? [...action.payload]
+          : ([] as TaskItemType[]);
       })
-      .addCase(clearCurrentPokemonAC, state => {
-        state.currentPokemon = {} as PokemonType;
+      .addCase(editCurrentTask.fulfilled, (state, action) => {
+        state.allTasks = action.payload
+          ? [...action.payload]
+          : ([] as TaskItemType[]);
+      })
+      .addCase(deleteCurrentTask.fulfilled, (state, action) => {
+        state.allTasks = action.payload
+          ? [...action.payload]
+          : ([] as TaskItemType[]);
+      })
+      .addCase(updateCurrentTask.fulfilled, (state, action) => {
+        state.allTasks = action.payload
+          ? [...action.payload]
+          : ([] as TaskItemType[]);
       });
   },
 });

@@ -3,7 +3,7 @@ import {TaskItemType} from '../api/api';
 
 export type RootStackParamsList = {
   Tasks: undefined;
-  CurrentTask: {item: TaskItemType};
+  CurrentTask: {item?: TaskItemType; create?: boolean};
 };
 
 export type UseNavigationType = NavigationProp<RootStackParamsList>;

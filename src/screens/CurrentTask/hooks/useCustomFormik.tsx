@@ -3,8 +3,8 @@ import {TaskItemType} from '../../../api/api';
 
 // <--------------- Formik --------------->
 
-const getInitialValues = (item: TaskItemType | null) => ({
-  id: item?.id || 0,
+const getInitialValues = (item: TaskItemType | undefined) => ({
+  _id: item?._id || '',
   title: item?.title || '',
   description: item?.description || '',
   is_done: item?.is_done || false,
@@ -12,7 +12,7 @@ const getInitialValues = (item: TaskItemType | null) => ({
 });
 
 export const useCustomFormik = (
-  item: TaskItemType | null,
+  item: TaskItemType | undefined,
   edit: (item: TaskItemType) => void,
   add: (item: TaskItemType) => void,
 ) => {
@@ -21,7 +21,7 @@ export const useCustomFormik = (
     onSubmit: async submitValues => {
       if (item) {
         edit({
-          id: submitValues.id,
+          _id: submitValues._id,
           title: submitValues.title,
           description: submitValues.description,
           is_done: submitValues.is_done,
@@ -29,7 +29,7 @@ export const useCustomFormik = (
         });
       } else {
         add({
-          id: submitValues.id,
+          _id: submitValues._id,
           title: submitValues.title,
           description: submitValues.description,
           is_done: submitValues.is_done,

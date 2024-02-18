@@ -16,18 +16,15 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     color: '#100f0f',
-    fontFamily: 'DeliciousHandrawn-Regular',
     fontWeight: '900',
   },
   description: {
     fontSize: 18,
     color: '#100f0f',
-    fontFamily: 'DeliciousHandrawn-Regular',
   },
   important: {
     fontSize: 14,
     color: '#fa0303',
-    fontFamily: 'DeliciousHandrawn-Regular',
     fontWeight: '900',
   },
 });

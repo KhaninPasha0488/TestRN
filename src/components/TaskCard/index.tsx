@@ -3,9 +3,12 @@ import CheckBox from '@react-native-community/checkbox';
 import React, {useState} from 'react';
 import {styles} from './styles';
 import Ionicons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {TaskItemType} from '../../api/api';
 type TaskCardType = {
   onPress: () => void;
-  id: number;
+  deleteCard: () => void;
+  updateCard: (_id: string, isDone: boolean) => void;
+  _id: string;
   title: string;
   description: string;
   is_done: boolean;
@@ -14,11 +17,13 @@ type TaskCardType = {
 
 export const TaskCard = ({
   onPress,
-  id,
+  deleteCard,
+  _id,
   title,
   description,
   is_done,
   is_important,
+  updateCard,
 }: TaskCardType) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(is_done);
   return (
@@ -27,15 +32,23 @@ export const TaskCard = ({
         {is_important && <Text style={styles.important}>Важная!</Text>}
       </View>
       <View style={{position: 'absolute', right: 5}}>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={deleteCard}>
           <Ionicons name="delete-circle-outline" size={25} />
         </TouchableOpacity>
       </View>
-      <CheckBox
-        disabled={false}
-        value={toggleCheckBox}
-        onValueChange={newValue => setToggleCheckBox(newValue)}
-      />
+      <TouchableOpacity
+        onPress={event => {
+          event.stopPropagation();
+        }}>
+        <CheckBox
+          disabled={false}
+          value={toggleCheckBox}
+          onValueChange={newValue => {
+            setToggleCheckBox(newValue);
+            updateCard(_id, newValue);
+          }}
+        />
+      </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
 
       <Text style={styles.description}>{description}</Text>

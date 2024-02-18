@@ -13,9 +13,10 @@ import {
 import {PADDING} from '../../constants/constants';
 import {useAppDispatch, useAppSelector} from '../../store/store';
 import {
+  deleteCurrentTask,
   getAllTasks,
-  getCurrentPokemon,
   refreshAllTasks,
+  updateCurrentTask,
 } from '../../store/root';
 import {styles} from './styles';
 import {TaskCard} from '../../components/TaskCard';
@@ -26,36 +27,11 @@ const image = {
   uri: 'https://thumb.photo-ac.com/12/1273b3d59042eaccd298f92b943f259c_w.jpeg',
 };
 
-const tasks = [
-  {
-    id: 3,
-    title: 'Стирка',
-    description:
-      'Постирать носки Постирать носки Постирать носки Постирать носки Постирать носки',
-    is_done: true,
-    is_important: false,
-  },
-  {
-    id: 3,
-    title: 'Task2',
-    description: 'description2 description2',
-    is_done: false,
-    is_important: true,
-  },
-  {
-    id: 3,
-    title: 'Task3',
-    description: '3description description3',
-    is_done: false,
-    is_important: false,
-  },
-];
 export const Tasks = () => {
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
-  // const tasks = useAppSelector(state => state.root.allTasks);
-  const isFetching = useAppSelector(state => state.root.isFetching);
-  const [offset, setOffset] = useState(0);
+  const tasks = useAppSelector(state => state.root.allTasks);
+  const [filterTasks, setTasks] = useState<TaskItemType[]>([]);
   const [refreshing, setRefreshing] = React.useState(false);
   const [input, setInput] = useState('');
   const [all, setAll] = useState<boolean>(true);
@@ -64,25 +40,50 @@ export const Tasks = () => {
     dispatch(refreshAllTasks())
       .unwrap()
       .then(() => {
+        // setTasks(AllTask);
         setRefreshing(false);
         setInput('');
       });
   }, [dispatch]);
   const onTaskCard = (item: TaskItemType) => {
-    console.log(item);
     navigation.navigate('CurrentTask', {item});
-    // dispatch(getCurrentPokemon(id))
-    //   .unwrap()
-    //   .then(() => {
-    //     navigation.navigate('CurrentPokemon');
-    //   });
+  };
+  const onFilterCard = () => {
+    setTasks(tasks.filter(e => e.is_important));
+  };
+  const onCreateTaskCard = () => {
+    navigation.navigate('CurrentTask', {create: true});
+  };
+  const deleteCard = (item: TaskItemType) => {
+    dispatch(deleteCurrentTask(item))
+      .unwrap()
+      .then(() => {
+        setRefreshing(false);
+        setInput('');
+      });
+  };
+  const updateCard = (_id: string, isDone: boolean) => {
+    dispatch(
+      updateCurrentTask({
+        _id,
+        is_done: isDone,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        setRefreshing(false);
+      });
   };
   useEffect(() => {
-    dispatch(getAllTasks(offset));
-  }, [dispatch, offset]);
-  const onEndReached = () => {
-    setOffset(offset + 10);
-  };
+    dispatch(getAllTasks())
+      .unwrap()
+      .then(() => {
+        // setTasks(AllTask);
+        setRefreshing(false);
+        setInput('');
+      });
+  }, [dispatch]);
+
   if (!Object.keys(tasks).length) {
     return (
       <View style={styles.loading}>
@@ -96,9 +97,11 @@ export const Tasks = () => {
       return (
         <TaskCard
           onPress={() => onTaskCard(item)}
+          deleteCard={() => deleteCard(item)}
+          updateCard={updateCard}
           title={item.title}
           description={item.description}
-          id={item.id}
+          _id={item._id}
           is_done={item.is_done}
           is_important={item.is_important}
         />
@@ -108,9 +111,11 @@ export const Tasks = () => {
       return (
         <TaskCard
           onPress={() => onTaskCard(item)}
+          deleteCard={() => deleteCard(item)}
+          updateCard={updateCard}
           title={item.title}
           description={item.description}
-          id={item.id}
+          _id={item._id}
           is_done={item.is_done}
           is_important={item.is_important}
         />
@@ -138,31 +143,50 @@ export const Tasks = () => {
             marginBottom: 10,
           }}>
           <TouchableOpacity
-            onPress={() => setAll(true)}
+            onPress={() => {
+              setAll(true);
+              onRefresh();
+            }}
             activeOpacity={0.9}
             style={all && styles.activeBorder}>
             <Text style={all ? styles.activeText : styles.text}>Все</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setAll(false)}
+            onPress={() => {
+              setAll(false);
+              onFilterCard();
+            }}
             activeOpacity={0.9}
             style={!all && styles.activeBorder}>
             <Text style={!all ? styles.activeText : styles.text}>Важные</Text>
           </TouchableOpacity>
         </View>
+        <View
+          style={{
+            alignItems: 'center',
+          }}>
+          <TouchableOpacity
+            onPress={onCreateTaskCard}
+            activeOpacity={0.9}
+            style={{
+              borderRadius: 16,
+              borderWidth: 1,
+              padding: 5,
+              width: 170,
+              backgroundColor: '#d5a288',
+            }}>
+            <Text style={styles.activeText}> + Добавить</Text>
+          </TouchableOpacity>
+        </View>
         <FlatList
-          data={tasks}
+          data={all ? tasks : filterTasks}
           numColumns={1}
           contentContainerStyle={{paddingHorizontal: PADDING}}
           keyExtractor={(item, index) => `${item.title}.${index}`}
-          onEndReached={onEndReached}
           refreshing={refreshing}
           onRefresh={onRefresh}
           renderItem={renderItem}
         />
-        {isFetching && (
-          <ActivityIndicator size="large" style={styles.loadingCard} />
-        )}
       </ImageBackground>
     </KeyboardAvoidingView>
   );
